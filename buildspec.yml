@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+    commands:
+      - echo Installing dependencies...
+      - pip install -r requirements.txt
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 010928225490.dkr.ecr.us-east-1.amazonaws.com
+  pre_build:
+    commands:
+      - echo Pre-build phase...
+      - echo Building the Docker image...
+      - docker build -t mindspace .
+      - docker tag mindspace:latest 010928225490.dkr.ecr.us-east-1.amazonaws.com/mindspace:latest
+  build:
+    commands:
+      - echo Build phase...
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push 010928225490.dkr.ecr.us-east-1.amazonaws.com/mindspace:latest
